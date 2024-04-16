@@ -10,9 +10,13 @@ Board::Board() {
   goreIdx = 13;
 }
 
-bool Board::isFeasible(Row r, Column c) {
+byte Board::getMatrixAt(Row r, Column c) {
+  return matrix[r][c];
+}
+
+bool Board::isFeasible(Row r, Column c, bool announced, Row announcedRow) {
   // make sure we're trying to fill out a square which is in bounds
-  if ( (r > YAMB) || (c > NAJAVA) ) {
+  if ( (r > YAMB) || (c > NAJAVA) || (r < 0) || (c < 0) ) {
     return false;
   }
 
@@ -28,14 +32,16 @@ bool Board::isFeasible(Row r, Column c) {
   if ((c == GORE) && (r != goreIdx)) {
     return false;
   }
+
+  // if you've announced the column has to be najava
+  if ((announced) && ((c != NAJAVA) || (r != announcedRow)) ) {
+    return false;
+  }
   
   return true;
 }
 
 bool Board::update(Row r, Column c, byte *countArray) {
-  if (!isFeasible(r, c)) {
-    return false;
-  }
   matrix[r][c] = scoreAt(r, countArray);
   if (c == DOLJE) {
     doljeIdx++;
@@ -208,4 +214,34 @@ bool Board::isYamb(byte* countArray) {
     }
   }
   return (numQuintuplets==1);
+}
+
+const char* Board::convertColToCharArray(Column c) {
+  const char* colStrings[] = {
+    "DOLJE   ",
+    "GORE    ",
+    "SLOBODNO",
+    "NAJAVA  ",
+  };
+  return colStrings[c];
+}
+
+const char* Board::convertRowToCharArray(Row r) {
+  const char* rowStrings[] = {
+    "JEDINICA",
+    "DVOJKE  ",
+    "TROJKE  ",
+    "CETVORKE",
+    "PETICA  ",
+    "SESTICA ",
+    "MAX     ",
+    "MIN     ",
+    "DVAPARA ",
+    "TRIS    ",
+    "SKALA   ",
+    "FULL    ",
+    "POKER   ",
+    "YAMB    ",
+  };
+  return rowStrings[r];
 }

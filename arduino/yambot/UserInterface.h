@@ -4,6 +4,8 @@
 #include <Pixy2.h>
 #include "SoftwareSerial.h"
 #include "DFRobotDFPlayerMini.h"
+#include "Board.h"
+#include "Action.h"
 
 const byte PIN_COUNT_L = 2;
 const byte PIN_COUNT_M = 3;
@@ -24,6 +26,11 @@ class UserInterface {
     void setup(void);
     void getFaceValues(byte* countArray);
     void getFaceValuesFromSerial(byte* countArray);
+    void displayBoardToSerial(Board& b);
+    void displayFeasibleToSerial(Board& b, bool announced, Row announcedRow);
+    void recommendActionToSerial(Action a);
+    Action getActionFromSerial(byte* countArray, byte rollNumber, Board& b, bool announced, Row announcedRow);
+    int getIntFromSerial();
   private:
     Pixy2 pixy;
 };

@@ -1,0 +1,11 @@
+name: yambot
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::notebook=6.4.4
+  - conda-forge::pygame
+  - conda-forge::numpy
+  - conda-forge::gymnasium[classic_control]
+  - pip
+  - pip:
+    - tensorflow

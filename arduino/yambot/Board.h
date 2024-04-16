@@ -5,7 +5,7 @@
 enum Column {
   DOLJE,
   GORE,
-  SVUGDJE,
+  SLOBODNO,
   NAJAVA
 };
 
@@ -29,13 +29,16 @@ enum Row {
 class Board {
   public:
     Board();
-    bool isFeasible(Row r, Column c); // DOES NOT MUTATE check if we can place something in a particular place on the grid
+    bool isFeasible(Row r, Column c, bool announced, Row announcedRow); // DOES NOT MUTATE check if we can place something in a particular place on the grid
     byte scoreAt(Row r, byte* countArray); // DOES NOT MUTATE computes the score at a particular row based on a particular count array
     bool update(Row r, Column c, byte* countArray); // DOES MUTATE update the board at the specified index, ASSUMING it is valid
+    static const char* convertColToCharArray(Column c);
+    static const char* convertRowToCharArray(Row r);
+    byte getMatrixAt(Row r, Column c);
   private:
+    byte matrix[14][4]; // this matrix will store our scores in yamb. 0 means we scored zero points or crossed it out. 255 means we are yet to fill it out
     int doljeIdx; // which element are we due next to fill in the dolje column
     int goreIdx; // which element are we due next to fill in the gore column
-    byte matrix[14][4]; // this matrix will store our scores in yamb. 0 means we scored zero points or crossed it out. 255 means we are yet to fill it out
     byte computeSum(byte* countArray);
     bool isDvaPara(byte* countArray); // need to define this
     bool isTris(byte* countArray); // need to define this
@@ -43,6 +46,7 @@ class Board {
     bool isFull(byte* countArray); // need to define this
     bool isPoker(byte* countArray); // need to define this
     bool isYamb(byte* countArray); // need to define this
+    
 };
 
 #endif
