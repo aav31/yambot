@@ -6,6 +6,7 @@ dependencies:
   - conda-forge::pygame
   - conda-forge::numpy
   - conda-forge::gymnasium[classic_control]
+  - conda-forge::stable-baselines3
   - pip
   - pip:
     - tensorflow

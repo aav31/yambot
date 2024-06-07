@@ -4,6 +4,8 @@ from typing import Tuple, Dict
 import numpy as np
 
 class ROW(Enum):
+    """Enum representing each row in yamb
+    """
     ONES=0
     TWOS=1
     THREES=2
@@ -20,6 +22,8 @@ class ROW(Enum):
     YAMB=13
     
 class COL(Enum):
+    """Enum representing each col in yamb
+    """
     DOLJE=0
     GORE=1
     SLOBODNO=2
@@ -27,25 +31,66 @@ class COL(Enum):
     
 @dataclass
 class Action:
-    roll_number: int  # whether the action is meant to occur after roll 1, 2, 3 - can be considered 'action type'
+    """This is a class meant to represent a user action in yamb. There are three 'action types'
+        corresponding to roll_number. This is because each round of yamb consists of three rolls
+        and the type of action you can do after each roll is different.
+    
+    :param roll_number: Each round in yamb consists of three rolls. This tells you whether 
+        the action is meant to occur after roll 1, 2, 3. It can be considered as an action type.
+    :param keep: This parameter is only valid after rolls 1 and 2. It is an array of size 6
+        representing which dice we keep; keep[0] is the number of ones we keep, keep[1] is the
+        number of twos we keep etc
+    :param announce: This parameter is only valid after roll 1. It tells you whether you are 
+        intending to announce in this round of yamb.
+    :param row_to_fill: This parameter is only valid after roll 3.
+    :param col_to_fill: This parameter is only valid after roll 3.
+    """
+    roll_number: int
     keep: np.array # action type 1 and 2, array of length 6 saying which dice we keep
-    announce: bool = False # action type 1
-    announce_row: ROW = ROW.YAMB # action type 1
-    row_to_fill: ROW = ROW.YAMB # action type 3 
-    col_to_fill: COL = COL.DOLJE # action type 3
+    announce: bool = False # roll_number / action type 1
+    announce_row: ROW = ROW.YAMB # roll_number / action type 1
+    row_to_fill: ROW = ROW.YAMB # roll_number / action type 3 
+    col_to_fill: COL = COL.DOLJE # roll_number / action type 3
+    def __eq__(self, other):
+        """Compare whether one action is equal to another. All fields must match.
+        """
+        if isinstance(other, Action):
+            A = self.roll_number == other.roll_number
+            B = np.array_equal(self.keep, other.keep)
+            C = self.announce == other.announce
+            D = self.announce_row == other.announce_row
+            E = self.row_to_fill == other.row_to_fill
+            F = self.col_to_fill == other.col_to_fill
+            return A and B and C and D and E and F
+        else:
+            return False
 
 class YambEnv:
+    """
+    This environment corresponds to the game of yamb which is a fully observable markov decision process, meaning the
+    agent is able to see the entire state of environment.
+    
+    :param turn_number: This tells us which turn we are on. There are 14 * 4 turns in yamb each consisting of 3 rolls
+    :param roll_number: Each round in yamb consists of three rolls. This tells you which roll we are on. It must be
+        complimentary to the action received.
+    :param grid: This is the 14 * 4 grid in yamb which needs to be filled out.
+    :param roll: This tells us the roll we just had in multinomial format. This means roll[0] is the number of ones,
+        roll[1] is the number of twos etc.
+    :param announced: This tells us whether we have announced in our current turn.
+    :param announced_row: This tells us the row we have announced in our current turn.
+    """
     def __init__(self):
         self.turn_number = 0
         self.roll_number = 0
         self.grid = np.full((len(ROW), len(COL)), np.nan)
-        self.roll = np.array([0, 0, 0, 0, 0, 0])  # counts of dice in multinomial format
+        self.roll = np.array([0, 0, 0, 0, 0, 0])
         self.announced = None
         self.announced_row = None
     
     def reset(self) -> dict:
         """
-        Reset environment to initial state
+        Reset environment to initial state - remember this also includes rolling the dice
+        
         :return: observation of the initial state along with auxiliary information
         """
         for row in ROW:
@@ -53,32 +98,38 @@ class YambEnv:
                 self.grid[row.value, col.value] = np.nan
         
         self.turn_number = 1
-        self.roll = np.random.multinomial(5, [1/6.]*6)
         self.roll_number = 1
+        self.roll = np.random.multinomial(5, [1/6.]*6)
         self.announced = False
         self.announced_row = None
         return self.get_observation()
     
     def step(self, action : Action) -> Tuple[dict, float, bool, bool, str]:
         """
-        Run one timestep of the environment's dynamics - in total there are 14 * 4 turns and 3 rolls within each turn
-        :param action: input action which can be of type 1, 2 or 3 determined by action.roll_number param
-        :return: observation, reward, terminated, truncated, truncation_reason
-        reward = score - prev score
+        Run one timestep of the environment's dynamics - in total there are 14 * 4 turns, and 3 rolls within each turn
+        
+        :param action: Input action which can be of type 1, 2 or 3 determined by action.roll_number param
+        
+        :return: observation:dict, reward:float, terminated:bool, truncated:bool, truncation_reason:str
+        reward = score - prev score or -1000 if the game finishes in a 
         terminated is when the game finished properly
         truncated is when the game finished due to unforseen circumstances because the action was 'out of bounds'
         """
+        reason = ""
         if action.roll_number != self.roll_number:
-            return self.get_observation(), -1000, False, True, "Action needs to match state of game"
+            reason = "Action needs to match state of game"
+            raise ValueError(reason)
         
         if self.turn_number > 56:
-            raise IndexError("Game only has 56 turns - the game is already finished!")
+            reason = "Game only has 56 turns - the game is already finished!"
+            raise ValueError(reason)
         
         if action.roll_number not in [1, 2, 3]:
-            return self.get_observation(), -1000, False, True, "Action needs to be type 1, 2, or 3 not ".format(action.roll_number)
+            reason = "Action needs to be type 1, 2, or 3 not ".format(action.roll_number)
+            raise ValueError(reason)
         
         prev_score = self.get_score()
-        valid, reason = True, ""
+        valid = True
         if action.roll_number == 1:
             valid, reason = self.step_1(action)
         
@@ -95,7 +146,7 @@ class YambEnv:
         if (self.roll_number == 1) or (self.roll_number==2):
             self.roll_number += 1
         else:
-            # we are moving on to the next roll
+            # we are moving on to the next round
             self.roll_number = 1
             self.turn_number += 1
             self.announced = False
@@ -107,8 +158,6 @@ class YambEnv:
         reward = self.get_score() - prev_score
         terminated = True if self.turn_number > 56 else False
         return self.get_observation(grid_square_value), reward, terminated, False, ""
-        
-        
     
     def render(self, mode="human"):
         raise NotImplementedError

@@ -1,8 +1,0 @@
-name: cart-pole
-channels:
-  - conda-forge
-dependencies:
-  - numpy
-  - jupyter
-  - pygame
-  - gymnasium[classic_control]
