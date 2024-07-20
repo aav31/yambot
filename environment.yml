@@ -1,0 +1,14 @@
+name: yambot
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::notebook=6.4.4
+  - conda-forge::pygame
+  - conda-forge::numpy
+  - conda-forge::gymnasium[classic_control]
+  - conda-forge::sb3-contrib
+  - pip
+  - pip:
+    # - mlflow-skinny # these lines should be uncommented if you want to install this environment on the azure workspace
+    # - azureml-mlflow # these lines should be uncommented if you want to install this environment on the azure workspace
+    - tensorflow

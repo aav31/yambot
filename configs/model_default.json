@@ -1,0 +1,5 @@
+{
+    "model_name": "model_default",
+    "episodes_trained": 1000,
+    "params": {}
+}
