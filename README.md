@@ -30,7 +30,7 @@ There are two folders hidden from git `models` and `logs` (folder which will con
 
 ### Training
 To train from scratch (this will delete tensorboard logs and reset the episodes trained in the config file to be zero):
-`python -m scripts.train --episodes 1000 --config "configs/model_default.json" --reset True`
+`python -m scripts.train --episodes 1000 --config "configs/model_default.json" --reset`
 
 To continue training a model:
 `python -m scripts.train --episodes 1000 --config "configs/model_default.json"`

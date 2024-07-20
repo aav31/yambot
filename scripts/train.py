@@ -7,7 +7,7 @@ from sb3_contrib.common.maskable.evaluation import evaluate_policy
 from stable_baselines3.common.vec_env import SubprocVecEnv
 from stable_baselines3.common.env_util import make_vec_env
 from yamb import YambEnv, FlattenGrid
-
+import mlflow
 
 def create_vec_env(num_envs: int) -> SubprocVecEnv:
     """Create a vectorized yamb environment
@@ -68,6 +68,9 @@ def main(args):
         
     episode_length = 168
     
+    if args.azure:
+        mlflow.start_run()
+    
     # train for an extra args.episodes
     model.learn(total_timesteps=args.episodes * episode_length, reset_num_timesteps=False, tb_log_name=config["model_name"])
     
@@ -76,11 +79,23 @@ def main(args):
     config["episodes_trained"] += args.episodes
     with open(args.config, "w") as f:
         json.dump(config, f, indent=4)
+        
+    if args.azure:
+        env = YambEnv()
+        env = FlattenGrid(env)
+        mean_reward, std_reward = evaluate_policy(model, env, n_eval_episodes=50, warn=False)
+        mlflow.log_params(config["params"])
+        mlflow.log_metric("mean_reward", mean_reward)
+        mlflow.log_metric("std_reward", std_reward)
+        mlflow.log_metric("episodes_trained", config["episodes_trained"])
+        mlflow.end_run()
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Train a maskable PPO model with sb3 contrib")
-    parser.add_argument('--episodes', type=int, required=True, help="Number of episodes of training")
-    parser.add_argument('--config', type=str, required=True, help="Path to the config file")
-    parser.add_argument('--reset', type=bool, default=False, help="If true resets the config and wipes the logs")
+    parser.add_argument("--episodes", type=int, required=True, help="Number of episodes of training")
+    parser.add_argument("--config", type=str, required=True, help="Path to the config file")
+    parser.add_argument("--reset", type=bool, default=False, help="If you include this flag resets the config and wipes the logs")
+    parser.add_argument("--azure", type=bool, default=False, help="If you include this flag uses azure")
+    parser.add_argument("--num_envs", type=int, default=4, help="The number of parallel vector environments you want")
     args = parser.parse_args()
     main(args)
