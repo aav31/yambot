@@ -8,7 +8,6 @@ Create environment:
 
 To optionally create a new kernel for the terminal:
 `conda activate yambot`
-`conda install ipykernel`
 `python -m ipykernel install --user --name myenv --display-name "yambot"`
 
 To run the unit tests, from the root directory run:
@@ -34,6 +33,9 @@ To train from scratch (this will delete tensorboard logs and reset the episodes 
 
 To continue training a model:
 `python -m scripts.train --episodes 1000 --config "configs/model_default.json"`
+
+On an azure machine or cluster use:
+`python -m scripts.train --episodes 1000 --config "configs/model_default.json" --reset True --azure True`
 
 To look at the results for each model:
 `tensorboard --logdir=logs`

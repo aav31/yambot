@@ -50,7 +50,7 @@ def reset():
         
 
 def main(args):
-    vec_env = create_vec_env(4)
+    vec_env = create_vec_env(args.num_envs)
     
     if args.reset:
         reset()
@@ -88,6 +88,7 @@ def main(args):
         mlflow.log_metric("mean_reward", mean_reward)
         mlflow.log_metric("std_reward", std_reward)
         mlflow.log_metric("episodes_trained", config["episodes_trained"])
+        mlflow.log_artifact(f"models/{config["model_name"]}.zip")
         mlflow.end_run()
 
 if __name__ == "__main__":
@@ -95,7 +96,7 @@ if __name__ == "__main__":
     parser.add_argument("--episodes", type=int, required=True, help="Number of episodes of training")
     parser.add_argument("--config", type=str, required=True, help="Path to the config file")
     parser.add_argument("--reset", type=bool, default=False, help="If you include this flag resets the config and wipes the logs")
-    parser.add_argument("--azure", type=bool, default=False, help="If you include this flag uses azure")
+    parser.add_argument("--azure", type=bool, default=False, help="If you include this flag use mlflow to log in azure")
     parser.add_argument("--num_envs", type=int, default=4, help="The number of parallel vector environments you want")
     args = parser.parse_args()
     main(args)
