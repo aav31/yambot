@@ -1,6 +1,6 @@
 {
     "model_name": "model_gamma-50",
-    "episodes_trained": 1000,
+    "episodes_trained": 1100,
     "params": {
         "gamma": 0.5
     }

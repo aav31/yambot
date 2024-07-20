@@ -3,11 +3,10 @@
 All commands below should be run from the **root** directory
 
 ### Setup
-Create environment on local pc:
+Create environment:
 `conda env create -f environment.yml`
 
-To create environment on azure, please uncomment the two relevant lines from `environment.yml` and then run the following commands from an azure terminal
-`conda env create -f environment.yml`
+To optionally create a new kernel for the terminal:
 `conda activate yambot`
 `conda install ipykernel`
 `python -m ipykernel install --user --name myenv --display-name "yambot"`

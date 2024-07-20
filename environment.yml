@@ -9,6 +9,7 @@ dependencies:
   - conda-forge::sb3-contrib
   - pip
   - pip:
-    # - mlflow-skinny # these lines should be uncommented if you want to install this environment on the azure workspace
-    # - azureml-mlflow # these lines should be uncommented if you want to install this environment on the azure workspace
+    - mlflow-skinny
+    - azureml-mlflow
     - tensorflow
+    - ipykernel
