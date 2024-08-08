@@ -25,7 +25,10 @@ The `yamb` folder is a package containing the custom environment needed to simul
 
 The `scripts` folder contains the scripts for training, testing and evaluating yambot
 
-There are two folders hidden from git `models` and `logs` (folder which will contain log files for tensorboard)
+There are two folders hidden from git `models` and `logs` (folder which will contain log files for tensorboard).
+You need to make these two folders.
+Also drop the model_default_azure.zip into the models folder so you can use it.
+
 
 ### Training
 To train from scratch (this will delete tensorboard logs and reset the episodes trained in the config file to be zero):
