@@ -1,8 +1,12 @@
 # yambot 🎲
+Training a reinforcement learning agent to play Yamb, a Croatian dice game, because I could use all the help I can get.
 
 ## Features ✨
+- 🎲 **Masked PPO Training** - Utilizes state-of-the-art [Proximal Policy Optimization with invalid action masking](https://arxiv.org/abs/2006.14171).
+- 🏋️‍♂️ **Custom Gymnasium Environment** - Integrates [Gymnasium](https://gymnasium.farama.org/), an API standard for reinforcement learning, to simulate and train the AI model effectively.
+- 💻 **GPU Acceleration** - Leverages Microsoft Azure's GPU resources for enhanced training efficiency.
 
-## Rules of Snatch 📜
+## Rules of Yamb 📜
 
 ## How It Works 🧩
 
