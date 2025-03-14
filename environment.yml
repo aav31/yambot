@@ -2,15 +2,16 @@ name: yambot
 channels:
   - conda-forge
 dependencies:
-  - conda-forge::python=3.12.4
-  - conda-forge::notebook=6.4.4
-  - conda-forge::pygame
-  - conda-forge::numpy
-  - conda-forge::gymnasium[classic_control]
-  - conda-forge::sb3-contrib
+  - python=3.9
+  - jupyterlab
+  - pygame
+  - numpy
+  - gymnasium[classic_control]
+  - sb3-contrib
   - pip
   - pip:
     - mlflow-skinny
     - azureml-mlflow
     - tensorflow
     - ipykernel
+    - black
