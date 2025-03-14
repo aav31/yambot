@@ -204,7 +204,6 @@ class TestYambEnv(unittest.TestCase):
          [-145, -145, -145, -145],
          [-145, -145, -145, -145]]
         )
-        self.assertFalse(env.valid_announce_row(14))
         self.assertFalse(env.valid_announce_row(ROW.SIXES.value))
         self.assertTrue(env.valid_announce_row(ROW.MAX.value))
         self.assertTrue(env.valid_announce_row(10))

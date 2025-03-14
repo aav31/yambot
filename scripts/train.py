@@ -33,8 +33,9 @@ def reset():
     
     with open(args.config, "w") as f:
         json.dump(config, f, indent=4)
-    
-    log_path = f"logs/{config["model_name"]}_0"
+
+    model_name = config["model_name"]
+    log_path = f"logs/{model_name}_0"
     if os.path.exists(log_path):
         for filename in os.listdir(log_path):
             file_path = os.path.join(log_path, filename)
@@ -63,7 +64,8 @@ def main(args):
         model = MaskablePPO("MultiInputPolicy", vec_env, verbose=1, **config["params"], tensorboard_log="logs/")
     else:
         print("Loading model ...")
-        model = MaskablePPO.load(f"models/{config["model_name"]}")
+        model_name = config["model_name"]
+        model = MaskablePPO.load(f"models/{model_name}")
         model.set_env(vec_env)
         
     episode_length = 168
@@ -75,7 +77,8 @@ def main(args):
     model.learn(total_timesteps=args.episodes * episode_length, reset_num_timesteps=False, tb_log_name=config["model_name"])
     
     # save the model and update configs
-    model.save(f"models/{config["model_name"]}")
+    model_name = config["model_name"]
+    model.save(f"models/{model_name}")
     config["episodes_trained"] += args.episodes
     with open(args.config, "w") as f:
         json.dump(config, f, indent=4)
@@ -88,7 +91,7 @@ def main(args):
         mlflow.log_metric("mean_reward", mean_reward)
         mlflow.log_metric("std_reward", std_reward)
         mlflow.log_metric("episodes_trained", config["episodes_trained"])
-        mlflow.log_artifact(f"models/{config["model_name"]}.zip")
+        mlflow.log_artifact(f"models/{model_name}.zip")
         mlflow.end_run()
 
 if __name__ == "__main__":

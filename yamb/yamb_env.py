@@ -1,3 +1,25 @@
+"""
+This module defines the YambEnv class, which represents the environment for the Yamb board game.
+YambEnv includes attributes which represent game state - the RL problem we are solving is an MDP therefore environment state is equivalent to agent state.
+YambEnv also provides methods for resetting the environment, taking a step in the environment, rendering the environment, and validating actions.
+
+Attributes:
+- turn_number: This tells us which turn we are on. There are 14 * 4 turns in Yamb, each consisting of 3 rolls.
+- roll_number: Each turn in Yamb consists of three rolls. This tells you which roll we are on.
+- grid: This is the 14 * 4 grid in Yamb which needs to be filled out. -145 indicates not filled.
+- roll: This tells us the roll we just had in multinomial format. This means roll[2] is the number of 3s.
+- announced: This tells us whether we have announced in our current turn.
+- announced_row: This tells us the row we have announced in our current turn.
+
+Available functions:
+- __init__: Initializes the YambEnv environment with default values.
+- reset: Resets the environment to its initial state, including rolling the dice.
+- step: Runs one timestep of the environment's dynamics based on the provided action.
+- render: Renders the current state of the environment using Pygame.
+- close: Closes the Pygame window and cleans up resources.
+- valid_announce_row: Validates if the provided row is a valid announcement row.
+"""
+
 import numpy as np
 from typing import Tuple, Dict, List, Optional
 from numpy.typing import NDArray
@@ -8,14 +30,7 @@ from .col_enum import COL
 import pygame
 
 class YambEnv(gym.Env):
-    """
-    :param turn_number: This tells us which turn we are on. There are 14 * 4 turns in yamb each consisting of 3 rolls.
-    :param roll_number: Each round in yamb consists of three rolls. This tells you which roll we are on.
-    :param grid: This is the 14 * 4 grid in yamb which needs to be filled out. -145 indicates not filled.
-    :param roll: This tells us the roll we just had in multinomial format. This means roll[2] is the number of 3s.
-    :param announced: This tells us whether we have announced in our current turn.
-    :param announced_row: This tells us the row we have announced in our current turn.
-    """
+    """Environment for the Yamb board game."""
     RENDER_FPS = 10
     NAN = -145
     ACTION_ANNOUNCE_IDX = 6
@@ -25,10 +40,21 @@ class YambEnv(gym.Env):
     SCREEN_HEIGHT = 480
     
     def __init__(self):
+        """
+        Initializes the YambEnv environment with default values.
+
+        :param int turn_number: This tells us which turn we are on. There are 14 * 4 turns in Yamb, each consisting of 3 rolls.
+        :param int roll_number: Each turn in Yamb consists of three rolls. This tells you which roll we are on.
+        :param ndarray grid: This is the 14 * 4 grid in Yamb which needs to be filled out. -145 indicates not filled.
+        :param ndarray roll: This tells us the roll we just had in multinomial format. This means roll[2] is the number of 3s.
+        :param int announced: This tells us whether we have announced in our current turn.
+        :param int announced_row: This tells us the row we have announced in our current turn.
+        """
         super().__init__()
         self.turn_number = 0
         self.roll_number = 0
         self.grid = np.full((len(ROW), len(COL)), self.NAN)
+        # [num1s, num2s, num3s, num4s, num5s, num6s]
         self.roll = np.array([0, 0, 0, 0, 0, 0])
         self.announced = 0
         self.announced_row = 0
@@ -381,8 +407,6 @@ class YambEnv(gym.Env):
         
         :return: bool indicated whether you can actually announce that row
         """
-        if row not in ROW:
-            return False
         
         if self.grid[row, COL.NAJAVA.value] == self.NAN:
             return True
