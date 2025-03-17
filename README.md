@@ -1,13 +1,15 @@
 # yambot 🎲
 Training a reinforcement learning agent to play Yamb, a Croatian dice game, because I could use all the help I can get.
 
+![GIF](media/demo3.gif)
+
+
 ## Features ✨
 - 🎲 **Masked PPO Training** - Utilizes state-of-the-art [Proximal Policy Optimization with invalid action masking](https://arxiv.org/abs/2006.14171).
 - 🏋️‍♂️ **Custom Gymnasium Environment** - Integrates [Gymnasium](https://gymnasium.farama.org/), an API standard for reinforcement learning, to simulate and train the AI model effectively.
 - 💻 **GPU Acceleration** - Leverages Microsoft Azure's GPU resources for enhanced training efficiency.
 
 ## Rules of Yamb 📜
-
 2 to 5 players, but can also be played solo.
 
 **Objective**: Maximize **Total Score** below by strategically rolling dice, announcing and filling out the table.
@@ -45,22 +47,12 @@ Training a reinforcement learning agent to play Yamb, a Croatian dice game, beca
 
 **Total Score: A + B + C**
 
-(TODO: insert visual, finish polished rules explanation based on visual, potentially add link for further explanation)
-
-## How It Works 🧩
-
 ## Installation 🔧
-All commands below should be run from the **root** directory.
+Clone repo:
 
 Create environment:
 `conda env create -f environment.yml`
 
-To optionally create a new kernel for the terminal:
-`conda activate yambot`
-`python -m ipykernel install --user --name myenv --display-name "yambot"`
-
-To run the unit tests, from the root directory run:
-`python -m unittest discover -s tests -v`
 
 ## Folder Structure 📂
 - [`configs`](configs): Contains ways of configuring the model to play Yamb.
@@ -102,7 +94,7 @@ This functionality is a way to play yamb yourself, and is more a full test of wh
 ## License 📄
 
 ## Tests ✅
-To run a single test module (`test_bla.py` file) you can run:
-`python -m unittest tests.test_yamb_env`
+To run the unit tests, from the root directory run:
+`python -m unittest discover -v`
 
 
