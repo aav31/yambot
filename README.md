@@ -6,6 +6,8 @@ Training a reinforcement learning agent to play Yamb, a Croatian dice game, beca
 
 With a couple of hours training, the model is able to achieve a score of about 850; around the score of a beginner. With GPU training, it would probably be able to compete with a decent player.
 
+![TENSORBOARD](media/tensorboard_screenshot.png)
+
 ## Features ✨
 - 🎲 **Masked PPO Training** - Utilizes state-of-the-art [Proximal Policy Optimization with invalid action masking](https://arxiv.org/abs/2006.14171).
 - 🏋️‍♂️ **Custom Gymnasium Environment** - Integrates [Gymnasium](https://gymnasium.farama.org/), an API standard for reinforcement learning, to simulate and train the AI model effectively.
