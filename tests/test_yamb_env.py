@@ -1,8 +1,14 @@
 import unittest
 import numpy as np
 from yamb.yamb_env import YambEnv
-from yamb.row_enum import ROW
-from yamb.col_enum import COL
+from yamb.yamb_row import YambRow
+from yamb.yamb_column import YambColumn
+from yamb.constants import (
+    NAN,
+    TRUNCATION_PENALTY,
+    NUM_DICE,
+    DICE_SIDES,
+)
 
 # TODO: need to split this into tests cases and refactor, this is really long
 
@@ -30,49 +36,49 @@ class TestYambEnv(unittest.TestCase):
         idx = YambEnv.convert_row_fill_col_fill(13, 3)
         self.assertEqual(55, idx)
     
-    def test_get_next_dolje(self):
+    def test_get_next_down(self):
         env = YambEnv()
         
         # start of game nothing is filled out
-        self.assertEqual(ROW.ONES, ROW(env.get_next_dolje()))
+        self.assertEqual(YambRow.ONES, YambRow(env.get_next_down()))
         
         
         # when we add stuff to other columns nothing should change
-        env.grid[ROW.ONES.value, COL.GORE.value] = 1
-        env.grid[ROW.ONES.value, COL.SLOBODNO.value] = 1
-        self.assertEqual(ROW.ONES, ROW(env.get_next_dolje()))
+        env.grid[YambRow.ONES.value, YambColumn.UP.value] = 1
+        env.grid[YambRow.ONES.value, YambColumn.FREE.value] = 1
+        self.assertEqual(YambRow.ONES, YambRow(env.get_next_down()))
         
         # when we fill out the rows in order, check the function works as expected
-        rows = list(ROW)
+        rows = list(YambRow)
         for row in rows[:-1]:
-            env.grid[row.value, COL.DOLJE.value] = 0
-            self.assertEqual(rows[row.value+1], ROW(env.get_next_dolje()))
+            env.grid[row.value, YambColumn.DOWN.value] = 0
+            self.assertEqual(rows[row.value+1], YambRow(env.get_next_down()))
         
         # once we've filled everything out check that this returns nan
-        env.grid[rows[-1].value, COL.DOLJE.value] = 0
-        self.assertTrue(np.isnan(env.get_next_dolje()))
+        env.grid[rows[-1].value, YambColumn.DOWN.value] = 0
+        self.assertEqual(env.get_next_down(), NAN)
         
-    def test_get_next_gore(self):
+    def test_get_next_up(self):
         env = YambEnv()
         
         # start of game nothing is filled out
-        self.assertEqual(ROW.YAMB, ROW(env.get_next_gore()))
+        self.assertEqual(YambRow.YAMB, YambRow(env.get_next_up()))
         
         
         # when we add stuff to other columns nothing should change
-        env.grid[ROW.YAMB.value, COL.DOLJE.value] = 1
-        env.grid[ROW.YAMB.value, COL.SLOBODNO.value] = 1
-        self.assertEqual(ROW.YAMB, ROW(env.get_next_gore()))
+        env.grid[YambRow.YAMB.value, YambColumn.DOWN.value] = 1
+        env.grid[YambRow.YAMB.value, YambColumn.FREE.value] = 1
+        self.assertEqual(YambRow.YAMB, YambRow(env.get_next_up()))
         
         # when we fill out the rows in order, check the function works as expected
-        rows = list(ROW)
+        rows = list(YambRow)
         for row in reversed(rows[1:]):
-            env.grid[row.value, COL.GORE.value] = 0
-            self.assertEqual(rows[row.value-1], ROW(env.get_next_gore()))
+            env.grid[row.value, YambColumn.UP.value] = 0
+            self.assertEqual(rows[row.value-1], YambRow(env.get_next_up()))
         
         # once we've filled everything out check that this returns nan
-        env.grid[rows[0].value, COL.GORE.value] = 0
-        self.assertTrue(np.isnan(env.get_next_gore()))
+        env.grid[rows[0].value, YambColumn.UP.value] = 0
+        self.assertEqual(env.get_next_up(), NAN)
         
     def test_get_score(self):
         env = YambEnv()
@@ -204,8 +210,8 @@ class TestYambEnv(unittest.TestCase):
          [-145, -145, -145, -145],
          [-145, -145, -145, -145]]
         )
-        self.assertFalse(env.valid_announce_row(ROW.SIXES.value))
-        self.assertTrue(env.valid_announce_row(ROW.MAX.value))
+        self.assertFalse(env.valid_announce_row(YambRow.SIXES.value))
+        self.assertTrue(env.valid_announce_row(YambRow.MAX.value))
         self.assertTrue(env.valid_announce_row(10))
         
     def test_need_to_announce(self):
@@ -246,41 +252,41 @@ class TestYambEnv(unittest.TestCase):
         self.assertFalse(env.need_to_announce())
         
     def test_get_grid_square_value(self):
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.ONES.value, np.array([1,1,1,1,1,0])), 1)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.TWOS.value, np.array([0,2,1,1,1,0])), 4)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.THREES.value, np.array([5,0,0,0,0,0])), 0)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.FOURS.value, np.array([4,0,0,1,0,0])), 4)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.FIVES.value, np.array([0,0,0,0,5,0])), 25)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.SIXES.value, np.array([0,1,0,0,0,3])), 18)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.ONES.value, np.array([1,1,1,1,1,0])), 1)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.TWOS.value, np.array([0,2,1,1,1,0])), 4)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.THREES.value, np.array([5,0,0,0,0,0])), 0)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.FOURS.value, np.array([4,0,0,1,0,0])), 4)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.FIVES.value, np.array([0,0,0,0,5,0])), 25)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.SIXES.value, np.array([0,1,0,0,0,3])), 18)
         
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.MAX.value, np.array([1,1,1,1,1,0])), 15)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.MIN.value, np.array([4,1,0,0,0,0])), 6)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.MAX.value, np.array([1,1,1,1,1,0])), 15)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.MIN.value, np.array([4,1,0,0,0,0])), 6)
         
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.DVAPARA.value, np.array([4,1,0,0,0,0])), 0)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.DVAPARA.value, np.array([2,3,0,0,0,0])), 10+6)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.DVAPARA.value, np.array([1,0,0,0,2,2])), 10+22)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.TWO_PAIRS.value, np.array([4,1,0,0,0,0])), 0)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.TWO_PAIRS.value, np.array([2,3,0,0,0,0])), 10+6)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.TWO_PAIRS.value, np.array([1,0,0,0,2,2])), 10+22)
         
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.TRIS.value, np.array([4,1,0,0,0,0])), 20+3)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.TRIS.value, np.array([2,3,0,0,0,0])), 20+6)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.TRIS.value, np.array([1,0,0,0,2,2])), 0)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.THREE_OF_A_KIND.value, np.array([4,1,0,0,0,0])), 20+3)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.THREE_OF_A_KIND.value, np.array([2,3,0,0,0,0])), 20+6)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.THREE_OF_A_KIND.value, np.array([1,0,0,0,2,2])), 0)
         
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.SKALA.value, np.array([1,1,1,1,1,0])), 45)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.SKALA.value, np.array([1,1,1,1,0,1])), 0)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.SKALA.value, np.array([0,1,1,1,1,1])), 50)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.SKALA.value, np.array([0,1,2,0,1,1])), 0)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.STRAIGHT.value, np.array([1,1,1,1,1,0])), 45)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.STRAIGHT.value, np.array([1,1,1,1,0,1])), 0)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.STRAIGHT.value, np.array([0,1,1,1,1,1])), 50)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.STRAIGHT.value, np.array([0,1,2,0,1,1])), 0)
         
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.FULL.value, np.array([0,0,0,0,0,5])), 0)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.FULL.value, np.array([0,0,0,0,2,3])), 40 + 28)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.FULL.value, np.array([0,0,0,1,2,2])), 0)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.FULL.value, np.array([0,0,0,0,3,2])), 40 + 27)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.FULL_HOUSE.value, np.array([0,0,0,0,0,5])), 0)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.FULL_HOUSE.value, np.array([0,0,0,0,2,3])), 40 + 28)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.FULL_HOUSE.value, np.array([0,0,0,1,2,2])), 0)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.FULL_HOUSE.value, np.array([0,0,0,0,3,2])), 40 + 27)
         
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.POKER.value, np.array([0,4,1,0,0,0])), 50+8)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.POKER.value, np.array([0,5,0,0,0,0])), 50+8)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.POKER.value, np.array([0,0,0,0,2,3])), 0)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.FOUR_OF_A_KIND.value, np.array([0,4,1,0,0,0])), 50+8)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.FOUR_OF_A_KIND.value, np.array([0,5,0,0,0,0])), 50+8)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.FOUR_OF_A_KIND.value, np.array([0,0,0,0,2,3])), 0)
         
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.YAMB.value, np.array([0,0,0,0,0,5])), 60+30)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.YAMB.value, np.array([0,5,0,0,0,0])), 60+10)
-        self.assertEqual(YambEnv.get_grid_square_value(ROW.YAMB.value, np.array([0,0,0,0,1,4])), 0)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.YAMB.value, np.array([0,0,0,0,0,5])), 60+30)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.YAMB.value, np.array([0,5,0,0,0,0])), 60+10)
+        self.assertEqual(YambEnv.get_grid_square_value(YambRow.YAMB.value, np.array([0,0,0,0,1,4])), 0)
         
         
     def test_step(self):
@@ -300,7 +306,7 @@ class TestYambEnv(unittest.TestCase):
             0 + 0*14,
         ], dtype=np.int64)
         observation, reward, terminated, truncated, info = env.step(action)
-        self.assertEqual(reward, env.truncation_penalty)
+        self.assertEqual(reward, TRUNCATION_PENALTY)
         self.assertEqual(terminated, False)
         self.assertEqual(truncated, True)
         
@@ -313,7 +319,7 @@ class TestYambEnv(unittest.TestCase):
             observation["roll"][4],
             observation["roll"][5],
             1,
-            ROW.YAMB.value,
+            YambRow.YAMB.value,
             0 + 0*14,
         ], dtype=np.int64)
         observation, reward, terminated, truncated, info = env.step(action)
@@ -361,10 +367,10 @@ class TestYambEnv(unittest.TestCase):
             -145,
             -145,
             -145,
-            ROW.YAMB.value + 14 * COL.GORE.value,
+            YambRow.YAMB.value + 14 * YambColumn.UP.value,
         ], dtype=np.int64)
         observation, reward, terminated, truncated, info = env.step(action)
-        self.assertEqual(reward, env.truncation_penalty)
+        self.assertEqual(reward, TRUNCATION_PENALTY)
         self.assertEqual(terminated, False)
         self.assertEqual(truncated, True)
         
@@ -378,10 +384,10 @@ class TestYambEnv(unittest.TestCase):
             -145,
             -145,
             -145,
-            ROW.ONES.value + 14 * COL.NAJAVA.value,
+            YambRow.ONES.value + 14 * YambColumn.ANNOUNCE.value,
         ], dtype=np.int64)
         observation, reward, terminated, truncated, info = env.step(action)
-        self.assertEqual(reward, env.truncation_penalty)
+        self.assertEqual(reward, TRUNCATION_PENALTY)
         self.assertEqual(terminated, False)
         self.assertEqual(truncated, True)
         
@@ -395,7 +401,7 @@ class TestYambEnv(unittest.TestCase):
             -145,
             -145,
             -145,
-            ROW.YAMB.value + 14 * COL.NAJAVA.value,
+            YambRow.YAMB.value + 14 * YambColumn.ANNOUNCE.value,
         ], dtype=np.int64)
         observation, reward, terminated, truncated, info = env.step(action)
         self.assertEqual(observation["turn_number"], 1)
@@ -405,7 +411,7 @@ class TestYambEnv(unittest.TestCase):
         self.assertEqual(info["score"], 0) # score very likely to be zero because we probs didn't get a yamb
         self.assertEqual(terminated, False)
         self.assertEqual(truncated, False)
-        self.assertEqual(observation["grid"][ROW.YAMB.value, COL.NAJAVA.value], info["score"])
+        self.assertEqual(observation["grid"][YambRow.YAMB.value, YambColumn.ANNOUNCE.value], info["score"])
         last_roll = np.copy(observation["roll"])
         
         # try to announce row which has already been announced - should fail
@@ -417,12 +423,12 @@ class TestYambEnv(unittest.TestCase):
             observation["roll"][4],
             observation["roll"][5],
             1,
-            ROW.YAMB.value,
+            YambRow.YAMB.value,
             0 + 14 * 0,
         ], dtype=np.int64)
         observation, reward, terminated, truncated, info = env.step(action)
         np.testing.assert_array_equal(observation["roll"], last_roll)  # should be the same because we failed action
-        self.assertEqual(reward, env.truncation_penalty)
+        self.assertEqual(reward, TRUNCATION_PENALTY)
         self.assertEqual(terminated, False)
         self.assertEqual(truncated, True)
         
@@ -468,7 +474,7 @@ class TestYambEnv(unittest.TestCase):
             0,
             0,
             0,
-            ROW.DVAPARA.value + 14 * COL.DOLJE.value,
+            YambRow.TWO_PAIRS.value + 14 * YambColumn.DOWN.value,
         ], dtype=np.int64)
         observation, reward, terminated, truncated, info = env.step(action)
         self.assertTrue(truncated)
@@ -485,7 +491,7 @@ class TestYambEnv(unittest.TestCase):
             0,
             0,
             0,
-            ROW.DVAPARA.value + 14 * COL.GORE.value,
+            YambRow.TWO_PAIRS.value + 14 * YambColumn.UP.value,
         ], dtype=np.int64)
         observation, reward, terminated, truncated, info = env.step(action)
         self.assertTrue(truncated)
@@ -502,7 +508,7 @@ class TestYambEnv(unittest.TestCase):
             0,
             0,
             0,
-            ROW.DVAPARA.value + 14 * COL.NAJAVA.value,
+            YambRow.TWO_PAIRS.value + 14 * YambColumn.ANNOUNCE.value,
         ], dtype=np.int64)
         observation, reward, terminated, truncated, info = env.step(action)
         self.assertTrue(truncated)
@@ -519,7 +525,7 @@ class TestYambEnv(unittest.TestCase):
             0,
             0,
             0,
-            ROW.DVAPARA.value + 14 * COL.SLOBODNO.value,
+            YambRow.TWO_PAIRS.value + 14 * YambColumn.FREE.value,
         ], dtype=np.int64)
         observation, reward, terminated, truncated, info = env.step(action)
         self.assertFalse(truncated)
