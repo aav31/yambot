@@ -105,6 +105,9 @@ This functionality is a way to play yamb yourself, and is more a full test of wh
 `python -m scripts.yamb_yourself`
 
 ## License 📄
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
+
+![MIT License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ## Tests ✅
 To run the unit tests, from the root directory run:
