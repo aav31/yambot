@@ -41,7 +41,7 @@ With a couple of hours training, the model is able to achieve a score of about 8
   - **7. MIN**: Total of all the dice rolled. (e.g. \[1, 1, 1, 1, 1\] → 5 points).
   - **8. DVAPARA**: 2 pairs. (e.g. \[6, 1, 1, 1, 1\] → 0 points).
   - **9. TRIS**: 3 of a kind. (e.g. \[6, 6, 6, 1, 1\] → 18 points).
-  - **10. SKALA**: Straight.
+  - **10. SKALA**: Straight - 45 scored for a small straight and 50 scored for a large. (e.g. \[1, 2, 3, 4, 5\] → 45 points).
   - **11. FULL**: Full house.
   - **12. POKER**: 4 of a kind.
   - **13. YAMB**: YAMB! 5 of a kind.
