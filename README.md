@@ -1,6 +1,8 @@
 # yambot 🎲
 Training a reinforcement learning agent to play Yamb, a Croatian dice game, because I could use all the help I can get.
-![GIF](media/demo3.gif)
+
+**Note: The demo GIF may take a few seconds to load. Please be patient.**
+![DEMO](media/demo3.gif)
 
 With a couple of hours training, the model is able to achieve a score of about 850; around the score of a beginner. With GPU training, it would probably be able to compete with a decent player.
 
@@ -68,41 +70,61 @@ This will install all the necessary libraries and tools required to run the proj
 
 ## Folder Structure 📂
 - [`configs`](configs): Contains ways of configuring the model to play Yamb.
-- [`yamb`](yamb): A package containing the custom environment needed to simulate a game of Yamb.
+- [`media`](media): Contains images and videos demonstrating model performance.
+- [`models`](models): Folder containing trained reinforcement learning models.
 - [`scripts`](scripts): Contains the scripts for training, testing, and evaluating yambot.
+- [`tests`](tests): Contains tests for the custom Yamb environment.
+- [`yamb`](yamb): A package containing the custom environment needed to simulate a game of Yamb.
 
-There are two folders hidden from git `models` and `logs` (folder which will contain log files for tensorboard).
-You need to make these two folders.
-Also drop the model_default_azure.zip into the models folder so you can use it.
+A `logs` folder which contains log files for tensorboard is hidden from git.
 
 ## Usage 🚀
-##### Training
-
+#### Training
 To train from scratch (this will delete tensorboard logs and reset the episodes trained in the config file to be zero):
-`python -m scripts.train --episodes 1000 --config "configs/model_default.json" --reset`
+```bash
+python -m scripts.train --episodes 1000 --config "configs/model_default.json" --reset
+```
 
 To continue training a model:
-`python -m scripts.train --episodes 1000 --config "configs/model_default.json"`
+```bash
+python -m scripts.train --episodes 1000 --config "configs/model_default.json"
+```
 
 On an azure machine or cluster use:
-`python -m scripts.train --episodes 1000 --config "configs/model_default.json" --reset True --azure True`
+```bash
+python -m scripts.train --episodes 1000 --config "configs/model_default.json" --reset True --azure True
+```
 
 To look at the results for each model:
-`tensorboard --logdir=logs`
+```bash
+tensorboard --logdir=logs
+```
 
-To create a new model create a new config `model_new.json`, set `episodes_trained=0`, rename `model_name=model_new`, run:
-`python -m scripts.train --episodes 1000 --config "configs/model_new.json"`
+To create a new model:
+- Create a new config `model_new.json`
+- Set `episodes_trained=0`
+- Rename `model_name=model_new`
+- Run:
+  ```bash
+  python -m scripts.train --episodes 1000 --config "configs/model_new.json"
+  ```
 
-##### Test and evaluation
+#### Evaluation
 If if you want to test the model by watching it play a game of yamb:
-`python -m scripts.test --model_name model_default`
+```bash
+python -m scripts.test --model_name model_default
+```
 
 If you want to test the model by letting it play multpile games of yamb then be evaluated:
-`python -m scripts.evaluate --model_name model_default --episodes 100`
+```bash
+python -m scripts.evaluate --model_name model_default --episodes 100
+```
 
-##### Playing yamb yourself
+#### Playing yamb yourself
 This functionality is a way to play yamb yourself, and is more a full test of whether the environment is truly working as we expect:
-`python -m scripts.yamb_yourself`
+```bash
+python -m scripts.yamb_yourself
+```
 
 ## License 📄
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
@@ -111,6 +133,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Tests ✅
 To run the unit tests, from the root directory run:
-`python -m unittest discover -v`
+```bash
+python -m unittest discover -v
+```
 
 
