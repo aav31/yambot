@@ -48,11 +48,22 @@ Training a reinforcement learning agent to play Yamb, a Croatian dice game, beca
 **Total Score: A + B + C**
 
 ## Installation 🔧
-Clone repo:
+If you want to train, test or evaluate locally, follow these steps:
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/aav31/yambot.git
+   cd yambot
+   ```
+2. Create the conda environment:
+   ```bash
+   conda env create -f environment.yml
+   ```
+3. Activate the environment
+   ```bash
+   conda activate yambot
+   ```
 
-Create environment:
-`conda env create -f environment.yml`
-
+This will install all the necessary libraries and tools required to run the project.
 
 ## Folder Structure 📂
 - [`configs`](configs): Contains ways of configuring the model to play Yamb.
